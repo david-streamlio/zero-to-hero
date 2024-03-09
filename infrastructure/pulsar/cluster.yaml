@@ -1,0 +1,95 @@
+version: "3.9"
+services:
+
+  zookeeper:
+    image: streamnative/sn-pulsar:3.1.2.2
+    platform: linux/amd64
+    container_name: zookeeper
+    hostname: zookeeper
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/zookeeper.conf &&
+      exec bin/pulsar zookeeper"
+    environment:
+      PULSAR_PREFIX_clientPortAddress: zookeeper
+      PULSAR_PREFIX_clientPort: 2181
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: echo ruok | nc zookeeper 2181
+
+  init-cluster:
+    image: streamnative/sn-pulsar:3.1.2.2
+    platform: linux/amd64
+    container_name: init-cluster
+    hostname: init-cluster
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    command: >
+      bash -c "bin/pulsar initialize-cluster-metadata -c pulsar-cluster -zk zookeeper:2181 -cs zookeeper:2181 -uw http://pulsar-cluster-kafka-1:8080,pulsar-cluster-kafka-2:8080"
+
+  bookie:
+    image: streamnative/sn-pulsar:3.1.2.2
+    platform: linux/amd64
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      init-cluster:
+        condition: service_completed_successfully
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf &&
+      exec bin/bookkeeper bookie"
+    environment:
+      PULSAR_PREFIX_zkServers: zookeeper:2181
+      PULSAR_PREFIX_useHostNameAsBookieID: "true"
+      PULSAR_PREFIX_bookiePort: 3181
+      PULSAR_PREFIX_httpServerEnabled: "true"
+    healthcheck:
+      interval: 5s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8000/heartbeat
+
+  pulsar:
+    image: streamnative/sn-pulsar:3.1.2.2
+    platform: linux/amd64
+    depends_on:
+      bookie:
+        condition: service_healthy
+    container_name: broker-1
+    hostname: pulsar
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/broker.conf &&
+      exec bin/pulsar broker"
+    environment:
+      PULSAR_PREFIX_functionsWorkerEnabled: true
+      PULSAR_PREFIX_allowAutoTopicCreation: "true"
+      PULSAR_PREFIX_allowAutoTopicCreationType: partitioned
+      PULSAR_PREFIX_brokerDeleteInactiveTopicsEnabled: "false"
+      PULSAR_PREFIX_brokerEntryMetadataInterceptors: org.apache.pulsar.common.intercept.AppendIndexMetadataInterceptor
+      PULSAR_PREFIX_zookeeperServers: zookeeper:2181
+      PULSAR_PREFIX_configurationStoreServers: zookeeper:2181
+      PULSAR_PREFIX_clusterName: pulsar-cluster
+      PULSAR_PREFIX_managedLedgerDefaultEnsembleSize: 1
+      PULSAR_PREFIX_managedLedgerDefaultWriteQuorum: 1
+      PULSAR_PREFIX_managedLedgerDefaultAckQuorum: 1
+    ports:
+      - 6650:6650 # Pulsar Binary
+      - 8080:8080
+    healthcheck:
+      interval: 5s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8080/admin/v2/clusters/pulsar-cluster
+
+  coinbase-feed:
+    build:
+      context: ./coinbase-feed
+      dockerfile: Dockerfile
+    command: >
+      bash -c "sleep 20 && 
+         ./bin/pulsar-admin --admin-url http://pulsar:8080 sources create --archive /pulsar/connectors/coinbase-live-feed-1.0.0.nar --source-config-file /pulsar/connectors/coinbase-connector.yaml"
+    depends_on:
+      - pulsar
+
+networks:
+  default:
+    name: zero-to-hero
