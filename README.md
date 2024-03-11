@@ -23,6 +23,9 @@ This includes Apache Flink and Apache Pulsar
 
 1️⃣ Start Pulsar
 
+```bash
+sh ./bin/start-pulsar.sh
+```
 
 2️⃣ Start Flink
 
@@ -56,3 +59,5 @@ References
 - [Building an end-to-end Streaming Application](https://flink.apache.org/2020/07/28/flink-sql-demo-building-an-end-to-end-streaming-application/)
 - [Flink SQL docker compose example](https://github.com/Aiven-Open/sql-cli-for-apache-flink-docker/blob/main/docker-compose.yml)
 - [Flink Docker Reference](https://frameworks.readthedocs.io/en/latest/big-data/apache/flinkDocker.html)
+- https://blog.rockthejvm.com/pulsar-flink/
+- https://streamnative.io/blog/announcing-flink-pulsar-sql-connector

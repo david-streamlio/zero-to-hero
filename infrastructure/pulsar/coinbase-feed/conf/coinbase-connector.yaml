@@ -1,0 +1,19 @@
+##################################
+# Deployment
+##################################
+className: io.streamnative.data.feeds.realtime.coinbase.WebSocketSource
+tenant: public
+namespace: default
+name: coinbase-live-feed
+topicName: persistent://public/default/coinbase-livefeed
+configs:
+  websocketURI: "wss://ws-feed.exchange.coinbase.com"
+  subscription: "{ \"type\": \"subscribe\", \"channels\": [
+    { \"name\": \"heartbeat\", \"product_ids\": [ \"ETH-EUR\" ] } ] }"
+
+##################################
+# Processing
+##################################
+processingGuarantees: AT_MOST_ONCE
+schemaType: STRING
+logTopic: persistent://public/default/coinbase-log
