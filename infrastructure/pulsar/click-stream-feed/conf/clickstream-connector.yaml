@@ -1,0 +1,17 @@
+##################################
+# Deployment
+##################################
+className: io.streamnative.data.feeds.generated.clickstream.ClickstreamSource
+tenant: public
+namespace: default
+name: click-stream-feed
+topicName: persistent://public/default/clickstream-feed
+configs:
+  resource: "user_behavior.log.gz"
+
+##################################
+# Processing
+##################################
+processingGuarantees: AT_MOST_ONCE
+schemaType: STRING
+logTopic: persistent://public/default/clickstream-log

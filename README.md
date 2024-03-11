@@ -23,6 +23,9 @@ This includes Apache Flink and Apache Pulsar
 
 1️⃣ Start Pulsar
 
+```bash
+sh ./bin/start-pulsar.sh
+```
 
 2️⃣ Start Flink
 

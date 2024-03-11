@@ -57,6 +57,7 @@ services:
         condition: service_healthy
     container_name: broker-1
     hostname: pulsar
+    restart: always
     command: >
       bash -c "bin/apply-config-from-env.py conf/broker.conf &&
       exec bin/pulsar broker"
@@ -80,13 +81,23 @@ services:
       retries: 20
       test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8080/admin/v2/clusters/pulsar-cluster
 
-  coinbase-feed:
+#  coinbase-feed:
+#    build:
+#      context: ./coinbase-feed
+#      dockerfile: Dockerfile
+#    command: >
+#      bash -c "sleep 20 &&
+#         ./bin/pulsar-admin --admin-url http://pulsar:8080 sources create --archive /pulsar/connectors/coinbase-live-feed-1.0.0.nar --source-config-file /pulsar/connectors/coinbase-connector.yaml"
+#    depends_on:
+#      - pulsar
+
+  click-stream-feed:
     build:
-      context: ./coinbase-feed
+      context: ./click-stream-feed
       dockerfile: Dockerfile
     command: >
       bash -c "sleep 20 && 
-         ./bin/pulsar-admin --admin-url http://pulsar:8080 sources create --archive /pulsar/connectors/coinbase-live-feed-1.0.0.nar --source-config-file /pulsar/connectors/coinbase-connector.yaml"
+         ./bin/pulsar-admin --admin-url http://pulsar:8080 sources create --archive /pulsar/connectors/clickstream-generator-1.0.0.nar --source-config-file /pulsar/connectors/clickstream-connector.yaml"
     depends_on:
       - pulsar
 

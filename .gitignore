@@ -2,3 +2,4 @@
 target/
 
 .DS_Store
+/infrastructure/pulsar/click-stream-feed/data/user_behavior.log.zip
