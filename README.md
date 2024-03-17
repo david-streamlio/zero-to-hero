@@ -19,6 +19,7 @@ This includes Apache Flink, Apache Pulsar, Elasticsearch, Kibana, and MySQL
 
 
 1️⃣ Start Pulsar
+--
 
 Apache Pulsar is an open-source, distributed messaging and streaming platform built for the cloud. It will serve as our
 event streaming storage platform for this demo.
@@ -28,6 +29,7 @@ sh ./bin/start-pulsar.sh
 ```
 
 2️⃣ Start Flink
+--
 
 Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data 
 streams. It will serve as our distributed streaming computation platform for this demo. You can start it using the following
@@ -52,6 +54,7 @@ At this point, the Apache Flink Web UI is now available at http://localhost:8081
 ![Flink-UI.png](images%2FFlink-UI.png)
 
 3️⃣ Start Elasticsearch and Kibana
+--
 
 Elasticsearch is the distributed search and analytics engine at the heart of the Elastic Stack, aka ELK. Logstash and Beats 
 facilitate collecting, aggregating, and enriching your data and storing it in Elasticsearch. Kibana enables you to 
@@ -78,6 +81,7 @@ At this point, the Kibana UI should be available at http://localhost:5601
 ![Elastic-UI.png](images%2FElastic-UI.png)
 
 4️⃣ Start MySQL
+--
 
 MySQL is a relational database management system (RDBMS) developed by Oracle that is based on structured query language (SQL).
 For this demo, it will serve as a traditional data warehouse that is queried to enrich our streaming data. You can start 
@@ -89,6 +93,7 @@ sh ./bin/start-mysql.sh
 ```
 
 5️⃣ Start the Flink SQL client
+--
 
 The Flink SQL Client aims to provide an easy way of writing, debugging, and submitting table programs to a Flink cluster
 without a single line of Java or Scala code. The SQL client makes it possible to work with queries written in the SQL language
