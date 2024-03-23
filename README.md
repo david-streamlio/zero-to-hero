@@ -116,6 +116,12 @@ command to start the SQL client:
 ![Flink-SQL-UI.png](images%2FFlink-SQL-UI.png)
 
 
+Now you are ready to try one of the use cases
+---
+
+- [ClickStream Analysis](./use-cases/ecommerce/docs/README.md) 
+
+
 References
 ------------
 - [Building an end-to-end Streaming Application](https://flink.apache.org/2020/07/28/flink-sql-demo-building-an-end-to-end-streaming-application/)
